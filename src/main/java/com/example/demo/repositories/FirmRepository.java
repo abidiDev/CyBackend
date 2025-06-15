@@ -16,9 +16,12 @@ public interface FirmRepository extends Neo4jRepository<Firm, Long> {
     // Méthode pour trouver une entreprise par son firmId
     @Query("MATCH (f:Firm) WHERE f.firm_id = $firmId RETURN f")
     Optional<Firm> findByFirmId(Long firmId);
+    // Retrieve both incoming and outgoing transactions related to the firm.
+    // Using an undirected pattern ensures transactions are loaded regardless of
+    // their direction so that the service layer can determine INCOMING or OUTGOING.
     @Query("MATCH (f:Firm {firm_id: $firmId}) " +
-            "OPTIONAL MATCH (o:Firm)-[tIn:Transaction]->(f) " +
-            "RETURN f, tIn, o")
+            "OPTIONAL MATCH (f)-[t:Transaction]-(o:Firm) " +
+            "RETURN f, t, o")
     Optional<Firm> findByIdWithTransactions(@Param("firmId") Long firmId);
 
     List<Firm> findByFirmName(String firmName);

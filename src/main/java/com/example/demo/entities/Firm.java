@@ -32,7 +32,11 @@ public class Firm implements Serializable {
     @Property("firm_type")
     private String firmType;
 
-    @Relationship(type = "Transaction", direction = Relationship.Direction.OUTGOING)
+    // We want to load both incoming and outgoing transactions when fetching a firm
+    // to be able to compute transaction direction later in the service layer.
+    // Using UNDIRECTED ensures Spring Data Neo4j retrieves relationships of
+    // either direction.
+    @Relationship(type = "Transaction", direction = Relationship.Direction.UNDIRECTED)
     @JsonManagedReference
 
     private List<Transaction> transactions;
